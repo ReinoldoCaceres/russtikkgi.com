@@ -33,25 +33,6 @@ const Newsletter: React.FC = () => {
 
           <form className="newsletter__form" onSubmit={handleSubmit}>
             <div className="newsletter__form-row">
-              <div className="newsletter__form-group">
-                <label htmlFor="gender" className="newsletter__label">
-                  Gender *
-                </label>
-                <select
-                  id="gender"
-                  name="gender"
-                  value={formData.gender}
-                  onChange={handleInputChange}
-                  className="newsletter__select"
-                  required
-                >
-                  <option value="">Select Gender</option>
-                  <option value="female">Female</option>
-                  <option value="male">Male</option>
-                  <option value="fluid">Fluid</option>
-                </select>
-              </div>
-
               <div className="newsletter__form-group newsletter__form-group--email">
                 <label htmlFor="email" className="newsletter__label">
                   Email sign-up *

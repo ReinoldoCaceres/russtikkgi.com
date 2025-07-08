@@ -20,7 +20,7 @@ const Hero: React.FC = () => {
               </div>
             </div>
             <div className="hero__collection-content">
-              <h2 className="hero__collection-title">New Spring Collection 2025</h2>
+              <h2 className="hero__collection-title">New Summer Collection 2025</h2>
               <button className="hero__collection-btn">Shop the Collection</button>
             </div>
           </div>

@@ -85,8 +85,6 @@ const Header: React.FC = () => {
             <Link to="/collection/swimwear" className="header__category-link">Swimwear</Link>
             <Link to="/collection/ball-gowns" className="header__category-link">Ball Gowns</Link>
             <Link to="/collection/revamp" className="header__category-link">ReVamp</Link>
-            <Link to="#" className="header__category-link">Accessories</Link>
-            <Link to="#" className="header__category-link">Culture</Link>
           </nav>
         </div>
       </div>
@@ -106,8 +104,6 @@ const Header: React.FC = () => {
               <Link to="/collection/swimwear" className="header__mobile-link" onClick={() => setIsMenuOpen(false)}>Swimwear</Link>
               <Link to="/collection/ball-gowns" className="header__mobile-link" onClick={() => setIsMenuOpen(false)}>Ball Gowns</Link>
               <Link to="/collection/revamp" className="header__mobile-link" onClick={() => setIsMenuOpen(false)}>ReVamp</Link>
-              <Link to="#" className="header__mobile-link" onClick={() => setIsMenuOpen(false)}>Accessories</Link>
-              <Link to="#" className="header__mobile-link" onClick={() => setIsMenuOpen(false)}>Culture</Link>
             </nav>
           </div>
         </div>

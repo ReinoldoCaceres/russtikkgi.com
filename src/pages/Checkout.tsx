@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useCart } from '../context/CartContext';
 import { CheckoutFormData } from '../types';
+import PaymentForm from '../components/PaymentForm';
 import './Checkout.css';
 
 const Checkout: React.FC = () => {
@@ -17,6 +18,7 @@ const Checkout: React.FC = () => {
   });
   const [isProcessing, setIsProcessing] = useState(false);
   const [orderComplete, setOrderComplete] = useState(false);
+  const [showPayment, setShowPayment] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -26,16 +28,23 @@ const Checkout: React.FC = () => {
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setIsProcessing(true);
-    
-    // Simulate payment processing
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    setIsProcessing(false);
+    // Validate form data
+    if (!formData.email || !formData.firstName || !formData.lastName || !formData.address || !formData.city || !formData.zipCode) {
+      alert('Please fill in all required fields');
+      return;
+    }
+    setShowPayment(true);
+  };
+
+  const handlePaymentSuccess = (paymentIntent: any) => {
     setOrderComplete(true);
     clearCart();
+  };
+
+  const handlePaymentError = (error: string) => {
+    alert(`Payment failed: ${error}`);
   };
 
   if (items.length === 0 && !orderComplete) {
@@ -84,7 +93,8 @@ const Checkout: React.FC = () => {
         
         <div className="checkout__content">
           <div className="checkout__form-section">
-            <form onSubmit={handleSubmit} className="checkout__form">
+            {!showPayment ? (
+              <form onSubmit={handleFormSubmit} className="checkout__form">
               <div className="checkout__section">
                 <h2 className="checkout__section-title">Contact Information</h2>
                 <div className="checkout__form-group">
@@ -206,40 +216,31 @@ const Checkout: React.FC = () => {
                 </div>
               </div>
 
-              <div className="checkout__section">
-                <h2 className="checkout__section-title">Payment Method</h2>
-                <div className="checkout__payment-methods">
-                  <label className="checkout__payment-method">
-                    <input
-                      type="radio"
-                      name="paymentMethod"
-                      value="card"
-                      checked={formData.paymentMethod === 'card'}
-                      onChange={handleInputChange}
-                    />
-                    <span>Credit Card</span>
-                  </label>
-                  <label className="checkout__payment-method">
-                    <input
-                      type="radio"
-                      name="paymentMethod"
-                      value="paypal"
-                      checked={formData.paymentMethod === 'paypal'}
-                      onChange={handleInputChange}
-                    />
-                    <span>PayPal</span>
-                  </label>
-                </div>
-              </div>
-
               <button 
                 type="submit" 
                 className="checkout__submit"
-                disabled={isProcessing}
               >
-                {isProcessing ? 'Processing...' : `Complete Order - $${getTotalPrice().toFixed(2)}`}
+                Continue to Payment
               </button>
             </form>
+            ) : (
+              <div className="checkout__payment-section">
+                <button 
+                  onClick={() => setShowPayment(false)}
+                  className="checkout__back-btn"
+                >
+                  ← Back to Shipping
+                </button>
+                <PaymentForm
+                  amount={getTotalPrice()}
+                  onPaymentSuccess={handlePaymentSuccess}
+                  onPaymentError={handlePaymentError}
+                  isProcessing={isProcessing}
+                  setIsProcessing={setIsProcessing}
+                  customerInfo={formData}
+                />
+              </div>
+            )}
           </div>
 
           <div className="checkout__summary">

@@ -365,4 +365,38 @@
   .checkout__payment-method {
     padding: 12px;
   }
+}
+
+/* Payment Section Styles */
+.checkout__payment-section {
+  background: #f8f8f8;
+  padding: 40px;
+}
+
+.checkout__back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: transparent;
+  color: #000000;
+  border: 1px solid #000000;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 30px;
+}
+
+.checkout__back-btn:hover {
+  background: #000000;
+  color: #ffffff;
+}
+
+@media (max-width: 768px) {
+  .checkout__payment-section {
+    padding: 30px 20px;
+  }
 } 

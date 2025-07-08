@@ -32,12 +32,6 @@ const CategoryGrid: React.FC = () => {
       subtitle: 'Premium Denim',
       buttonText: 'Shop Now',
       size: 'medium'
-    },
-    {
-      id: 'accessories',
-      title: 'Accessories',
-      buttonText: 'Shop Now',
-      size: 'medium'
     }
   ];
 
