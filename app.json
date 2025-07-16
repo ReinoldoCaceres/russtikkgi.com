@@ -1,0 +1,19 @@
+{
+  "name": "russtikkgi",
+  "description": "Balmain-inspired homepage for russtikkgi",
+  "repository": "https://github.com/yourusername/russtikkgi.com",
+  "logo": "",
+  "keywords": ["node", "express", "react", "stripe"],
+  "image": "heroku/nodejs",
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    }
+  ],
+  "env": {
+    "STRIPE_SECRET_KEY": {
+      "description": "Your Stripe secret key",
+      "required": true
+    }
+  }
+} 

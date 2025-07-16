@@ -2,14 +2,15 @@
   "name": "russtikkgi.com",
   "version": "1.0.0",
   "description": "Balmain-inspired homepage for russtikkgi",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "start": "react-scripts start",
+    "start": "node server.js",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "server": "node server.js",
-    "dev": "concurrently \"npm run server\" \"npm start\""
+    "dev": "concurrently \"npm run server\" \"npm start\"",
+    "heroku-postbuild": "npm run build"
   },
   "dependencies": {
     "@stripe/react-stripe-js": "^3.7.0",
