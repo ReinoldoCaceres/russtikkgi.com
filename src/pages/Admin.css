@@ -1,0 +1,283 @@
+.admin {
+  padding: 2rem 0;
+  margin-top: 120px;
+  min-height: 80vh;
+  background: #f8f9fa;
+}
+
+.admin__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.admin__title {
+  font-size: 2rem;
+  font-weight: 300;
+  color: #000;
+  margin: 0;
+}
+
+.admin__stats {
+  display: flex;
+  gap: 2rem;
+}
+
+.admin__stat {
+  text-align: center;
+}
+
+.admin__stat-label {
+  display: block;
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 0.5rem;
+}
+
+.admin__stat-value {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #000;
+}
+
+.admin__loading,
+.admin__error,
+.admin__empty {
+  text-align: center;
+  padding: 3rem;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.admin__error {
+  color: #dc3545;
+}
+
+.admin__table-container {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  overflow: hidden;
+  overflow-x: auto;
+}
+
+.admin__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.admin__table th {
+  background: #f8f9fa;
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: #495057;
+  border-bottom: 2px solid #dee2e6;
+  white-space: nowrap;
+}
+
+.admin__table-row {
+  border-bottom: 1px solid #dee2e6;
+  transition: background-color 0.2s ease;
+}
+
+.admin__table-row:hover {
+  background: #f8f9fa;
+}
+
+.admin__cell {
+  padding: 1rem;
+  vertical-align: top;
+}
+
+.admin__order-id {
+  background: #e9ecef;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-family: 'Courier New', monospace;
+}
+
+.admin__customer {
+  min-width: 150px;
+}
+
+.admin__customer-name {
+  font-weight: 600;
+  color: #000;
+  margin-bottom: 0.25rem;
+}
+
+.admin__customer-address {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.admin__email {
+  color: #007bff;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.admin__email:hover {
+  text-decoration: underline;
+}
+
+.admin__items {
+  min-width: 200px;
+}
+
+.admin__item {
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.admin__item:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.admin__item-name {
+  display: block;
+  font-weight: 500;
+  color: #000;
+  margin-bottom: 0.25rem;
+}
+
+.admin__item-details {
+  display: block;
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.admin__total {
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: #000;
+  margin-bottom: 0.25rem;
+}
+
+.admin__payment-id {
+  font-size: 0.8rem;
+  color: #666;
+  font-family: 'Courier New', monospace;
+}
+
+.admin__status {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.admin__date {
+  font-size: 0.9rem;
+  color: #495057;
+  white-space: nowrap;
+}
+
+.admin__view-btn {
+  background: #007bff;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: background-color 0.2s ease;
+}
+
+.admin__view-btn:hover {
+  background: #0056b3;
+}
+
+.admin__pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding: 1rem;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.admin__page-btn {
+  background: #007bff;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.admin__page-btn:hover:not(:disabled) {
+  background: #0056b3;
+}
+
+.admin__page-btn:disabled {
+  background: #6c757d;
+  cursor: not-allowed;
+}
+
+.admin__page-info {
+  font-weight: 500;
+  color: #495057;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .admin__table-container {
+    font-size: 0.8rem;
+  }
+  
+  .admin__cell {
+    padding: 0.75rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .admin {
+    padding: 1rem 0;
+    margin-top: 100px;
+  }
+  
+  .admin__header {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+  }
+  
+  .admin__table-container {
+    border-radius: 0;
+    margin: 0 -1rem;
+  }
+  
+  .admin__table {
+    font-size: 0.75rem;
+  }
+  
+  .admin__cell {
+    padding: 0.5rem;
+  }
+  
+  .admin__customer,
+  .admin__items {
+    min-width: auto;
+  }
+} 

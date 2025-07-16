@@ -7,6 +7,7 @@ import {
   CardExpiryElement,
   CardCvcElement,
 } from '@stripe/react-stripe-js';
+import { useCart } from '../context/CartContext';
 import './PaymentForm.css';
 
 interface PaymentFormProps {
@@ -53,6 +54,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
   const stripe = useStripe();
   const elements = useElements();
   const [error, setError] = useState<string | null>(null);
+  const { items, getTotalPrice } = useCart();
 
   const cardElementOptions = {
     style: {
@@ -67,6 +69,58 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
         color: '#9e2146',
       },
     },
+  };
+
+  const saveOrderToDatabase = async (paymentIntent: any) => {
+    try {
+      const orderData = {
+        customerInfo: {
+          email: customerInfo.email,
+          firstName: customerInfo.firstName,
+          lastName: customerInfo.lastName,
+          address: customerInfo.address,
+          city: customerInfo.city,
+          zipCode: customerInfo.zipCode,
+          country: customerInfo.country
+        },
+        items: items.map(item => ({
+          productId: item.product.id,
+          productName: item.product.name,
+          price: item.product.price,
+          quantity: item.quantity,
+          size: item.size,
+          color: item.color
+        })),
+        payment: {
+          stripePaymentIntentId: paymentIntent.id,
+          amount: paymentIntent.amount,
+          currency: paymentIntent.currency,
+          status: paymentIntent.status
+        },
+        subtotal: getTotalPrice(),
+        tax: 0,
+        shipping: 0,
+        total: getTotalPrice()
+      };
+
+      const response = await fetch('/api/orders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ orderData }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save order');
+      }
+
+      const result = await response.json();
+      console.log('Order saved with ID:', result.orderId);
+    } catch (error) {
+      console.error('Error saving order:', error);
+      // Don't fail the payment if order saving fails
+    }
   };
 
   const handleSubmit = async (event: React.FormEvent) => {
@@ -129,7 +183,8 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
         setError(stripeError.message || 'An error occurred during payment processing.');
         onPaymentError(stripeError.message || 'Payment failed');
       } else {
-        // Payment succeeded
+        // Payment succeeded - save order to database
+        await saveOrderToDatabase(paymentIntent);
         onPaymentSuccess(paymentIntent);
       }
     } catch (err) {
