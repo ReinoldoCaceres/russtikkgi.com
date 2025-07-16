@@ -26,6 +26,22 @@ interface PaymentFormProps {
   };
 }
 
+// Country mapping for Stripe (full name to ISO code)
+const getCountryCode = (countryName: string): string => {
+  const countryMap: { [key: string]: string } = {
+    'United States': 'US',
+    'Canada': 'CA',
+    'United Kingdom': 'GB',
+    'France': 'FR',
+    'Germany': 'DE',
+    'Italy': 'IT',
+    'Spain': 'ES',
+    'Australia': 'AU',
+  };
+  
+  return countryMap[countryName] || 'US'; // Default to US if not found
+};
+
 const PaymentForm: React.FC<PaymentFormProps> = ({
   amount,
   onPaymentSuccess,
@@ -102,7 +118,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
                 line1: customerInfo.address,
                 city: customerInfo.city,
                 postal_code: customerInfo.zipCode,
-                country: customerInfo.country === 'United States' ? 'US' : customerInfo.country,
+                country: getCountryCode(customerInfo.country),
               },
             },
           },
