@@ -25,10 +25,10 @@ const Newsletter: React.FC = () => {
     <section className="newsletter">
       <div className="container">
         <div className="newsletter__content">
-          <h2 className="newsletter__title">Sign up for russtikkgi updates</h2>
+          <h2 className="newsletter__title">Sign up for russtikk updates</h2>
           <p className="newsletter__description">
             Be in the know about what's happening at our fashion house: never miss out on the latest trends, 
-            newest collections and exciting special projects from russtikkgi.
+            newest collections and exciting special projects from russtikk.
           </p>
 
           <form className="newsletter__form" onSubmit={handleSubmit}>
@@ -56,7 +56,7 @@ const Newsletter: React.FC = () => {
           </form>
 
           <p className="newsletter__disclaimer">
-            russtikkgi processes the data collected to send you our newsletter. To find out more about how we manage your personal data and to exercise your rights, please refer to our privacy policy.
+            russtikk processes the data collected to send you our newsletter. To find out more about how we manage your personal data and to exercise your rights, please refer to our privacy policy.
           </p>
           <p className="newsletter__required">
             *Mandatory information: If you choose not to give your consent for the collection of mandatory data you will not be able to subscribe to the newsletter.

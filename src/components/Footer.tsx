@@ -8,9 +8,9 @@ const Footer: React.FC = () => {
         <div className="footer__content">
           {/* Brand Section */}
           <div className="footer__brand">
-            <h3 className="footer__brand-title">russtikkgi Culture</h3>
+            <h3 className="footer__brand-title">russtikk Culture</h3>
             <p className="footer__brand-description">
-              russtikkgi's exclusive collection of clothing and accessories is the passport to a world 
+              russtikk's exclusive collection of clothing and accessories is the passport to a world 
               of exquisite elegance and glamor. This selection of luxury garments is the product of 
               incredibly talented creative work based upon persistent and meticulous attention to detail.
             </p>
@@ -85,7 +85,7 @@ const Footer: React.FC = () => {
         <div className="footer__bottom">
           <div className="footer__bottom-content">
             <p className="footer__copyright">
-              © 2025 russtikkgi. All rights reserved.
+              © 2025 russtikk. All rights reserved.
             </p>
             <div className="footer__bottom-links">
               <span className="footer__shipping">SHIPPING TO: United States ($)</span>

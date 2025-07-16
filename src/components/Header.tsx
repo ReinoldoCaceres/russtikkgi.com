@@ -45,7 +45,7 @@ const Header: React.FC = () => {
             {/* Logo */}
             <div className="header__logo">
               <Link to="/">
-                <h1>russtikkgi</h1>
+                <h1>russtikk</h1>
               </Link>
             </div>
 

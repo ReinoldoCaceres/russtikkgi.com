@@ -7,7 +7,7 @@ const Hero: React.FC = () => {
       <div className="hero__content">
         {/* Main Brand Display */}
         <div className="hero__brand">
-          <h1 className="hero__title">russtikkgi</h1>
+          <h1 className="hero__title">russtikk</h1>
           <p className="hero__scroll">Scroll down</p>
         </div>
 
