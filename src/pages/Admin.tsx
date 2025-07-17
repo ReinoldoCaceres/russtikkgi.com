@@ -54,6 +54,8 @@ const Admin: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [pagination, setPagination] = useState<any>(null);
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [showOrderDetails, setShowOrderDetails] = useState(false);
 
   const fetchOrders = async (page: number = 1) => {
     try {
@@ -102,6 +104,16 @@ const Admin: React.FC = () => {
       case 'cancelled': return '#dc3545';
       default: return '#6c757d';
     }
+  };
+
+  const handleViewOrder = (order: Order) => {
+    setSelectedOrder(order);
+    setShowOrderDetails(true);
+  };
+
+  const closeOrderDetails = () => {
+    setSelectedOrder(null);
+    setShowOrderDetails(false);
   };
 
   if (loading) {
@@ -213,9 +225,9 @@ const Admin: React.FC = () => {
                         <div className="admin__date">{formatDate(order.createdAt)}</div>
                       </td>
                       <td className="admin__cell">
-                        <button 
+                                                <button
                           className="admin__view-btn"
-                          onClick={() => {/* View details functionality */}}
+                          onClick={() => handleViewOrder(order)}
                         >
                           View
                         </button>
@@ -250,6 +262,135 @@ const Admin: React.FC = () => {
               </div>
             )}
           </>
+        )}
+
+        {/* Order Details Modal */}
+        {showOrderDetails && selectedOrder && (
+          <div className="admin__modal-overlay" onClick={closeOrderDetails}>
+            <div className="admin__modal" onClick={(e) => e.stopPropagation()}>
+              <div className="admin__modal-header">
+                <h2>Order Details</h2>
+                <button className="admin__modal-close" onClick={closeOrderDetails}>
+                  ×
+                </button>
+              </div>
+              
+              <div className="admin__modal-content">
+                <div className="admin__order-info">
+                  <div className="admin__info-section">
+                    <h3>Order Information</h3>
+                    <div className="admin__info-grid">
+                      <div className="admin__info-item">
+                        <span className="admin__info-label">Order ID:</span>
+                        <span className="admin__info-value">{selectedOrder.orderId}</span>
+                      </div>
+                      <div className="admin__info-item">
+                        <span className="admin__info-label">Date:</span>
+                        <span className="admin__info-value">{formatDate(selectedOrder.createdAt)}</span>
+                      </div>
+                      <div className="admin__info-item">
+                        <span className="admin__info-label">Status:</span>
+                        <span 
+                          className="admin__info-value admin__status-badge"
+                          style={{ backgroundColor: getStatusColor(selectedOrder.orderStatus) }}
+                        >
+                          {selectedOrder.orderStatus}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="admin__info-section">
+                    <h3>Customer Information</h3>
+                    <div className="admin__info-grid">
+                      <div className="admin__info-item">
+                        <span className="admin__info-label">Name:</span>
+                        <span className="admin__info-value">
+                          {selectedOrder.customerInfo.firstName} {selectedOrder.customerInfo.lastName}
+                        </span>
+                      </div>
+                      <div className="admin__info-item">
+                        <span className="admin__info-label">Email:</span>
+                        <span className="admin__info-value">{selectedOrder.customerInfo.email}</span>
+                      </div>
+                      <div className="admin__info-item">
+                        <span className="admin__info-label">Address:</span>
+                        <span className="admin__info-value">
+                          {selectedOrder.customerInfo.address}<br />
+                          {selectedOrder.customerInfo.city}, {selectedOrder.customerInfo.zipCode}<br />
+                          {selectedOrder.customerInfo.country}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="admin__info-section">
+                    <h3>Payment Information</h3>
+                    <div className="admin__info-grid">
+                      <div className="admin__info-item">
+                        <span className="admin__info-label">Payment Status:</span>
+                        <span 
+                          className="admin__info-value admin__status-badge"
+                          style={{ backgroundColor: getStatusColor(selectedOrder.payment.status) }}
+                        >
+                          {selectedOrder.payment.status}
+                        </span>
+                      </div>
+                      <div className="admin__info-item">
+                        <span className="admin__info-label">Payment ID:</span>
+                        <span className="admin__info-value">{selectedOrder.payment.stripePaymentIntentId}</span>
+                      </div>
+                      <div className="admin__info-item">
+                        <span className="admin__info-label">Currency:</span>
+                        <span className="admin__info-value">{selectedOrder.payment.currency.toUpperCase()}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="admin__info-section">
+                    <h3>Order Items</h3>
+                    <div className="admin__items-list">
+                      {selectedOrder.items.map((item, index) => (
+                        <div key={index} className="admin__item">
+                          <div className="admin__item-info">
+                            <div className="admin__item-name">{item.productName}</div>
+                            <div className="admin__item-details">
+                              Size: {item.size} | Color: {item.color} | Qty: {item.quantity}
+                            </div>
+                          </div>
+                          <div className="admin__item-price">
+                            {formatPrice(item.price * item.quantity)}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="admin__info-section">
+                    <h3>Order Summary</h3>
+                    <div className="admin__order-summary">
+                      <div className="admin__summary-row">
+                        <span>Subtotal:</span>
+                        <span>{formatPrice(selectedOrder.subtotal)}</span>
+                      </div>
+                      <div className="admin__summary-row">
+                        <span>Tax:</span>
+                        <span>{formatPrice(selectedOrder.tax)}</span>
+                      </div>
+                      <div className="admin__summary-row">
+                        <span>Shipping:</span>
+                        <span>{formatPrice(selectedOrder.shipping)}</span>
+                      </div>
+                      <div className="admin__summary-row admin__summary-total">
+                        <span>Total:</span>
+                        <span>{formatPrice(selectedOrder.total)}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         )}
       </div>
     </div>

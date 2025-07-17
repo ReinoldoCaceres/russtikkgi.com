@@ -280,4 +280,252 @@
   .admin__items {
     min-width: auto;
   }
+}
+
+/* Admin Navigation */
+.admin-nav {
+  margin-bottom: 2rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.admin-nav__links {
+  display: flex;
+  gap: 2rem;
+}
+
+.admin-nav__link {
+  text-decoration: none;
+  color: #666;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.admin-nav__link:hover {
+  color: #007bff;
+  background: #f0f8ff;
+}
+
+.admin-nav__link--active {
+  color: #007bff;
+  background: #e3f2fd;
+  font-weight: 600;
+}
+
+/* Modal Styles */
+.admin__modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.admin__modal {
+  background: white;
+  border-radius: 12px;
+  max-width: 800px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.admin__modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px;
+  border-bottom: 1px solid #e5e5e5;
+  background: #f8f9fa;
+  border-radius: 12px 12px 0 0;
+}
+
+.admin__modal-header h2 {
+  margin: 0;
+  color: #333;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.admin__modal-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #666;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.admin__modal-close:hover {
+  background: #e9ecef;
+  color: #333;
+}
+
+.admin__modal-content {
+  padding: 24px;
+}
+
+.admin__order-info {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.admin__info-section {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.admin__info-section h3 {
+  margin: 0 0 16px 0;
+  color: #333;
+  font-size: 1.2rem;
+  font-weight: 600;
+  border-bottom: 2px solid #dee2e6;
+  padding-bottom: 8px;
+}
+
+.admin__info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+}
+
+.admin__info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.admin__info-label {
+  font-weight: 600;
+  color: #666;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.admin__info-value {
+  color: #333;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+.admin__status-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  color: white;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.admin__items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.admin__item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e5e5e5;
+}
+
+.admin__item-info {
+  flex: 1;
+}
+
+.admin__item-name {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 4px;
+}
+
+.admin__item-details {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.admin__item-price {
+  font-weight: 600;
+  color: #d4af37;
+  font-size: 1.1rem;
+}
+
+.admin__order-summary {
+  background: white;
+  border-radius: 8px;
+  padding: 16px;
+  border: 1px solid #e5e5e5;
+}
+
+.admin__summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.admin__summary-row:last-child {
+  border-bottom: none;
+}
+
+.admin__summary-total {
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: #333;
+  border-top: 2px solid #dee2e6;
+  margin-top: 8px;
+  padding-top: 16px;
+}
+
+/* Responsive Modal */
+@media (max-width: 768px) {
+  .admin__modal {
+    margin: 10px;
+    max-height: 95vh;
+  }
+  
+  .admin__modal-header,
+  .admin__modal-content {
+    padding: 16px;
+  }
+  
+  .admin__info-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .admin__item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .admin__item-price {
+    align-self: flex-end;
+  }
 } 
