@@ -1,4 +1,4 @@
-# russtikkgi.com
+# russtikk.com
 
 A luxury fashion website inspired by Balmain's design, featuring elegant typography, sophisticated grid layouts, and premium aesthetics. Built with React and TypeScript.
 
