@@ -2,31 +2,317 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const mongoose = require('mongoose');
+const multer = require('multer');
+const { v4: uuidv4 } = require('uuid');
+const fs = require('fs');
 const Order = require('./models/Order');
+const Product = require('./models/Product');
 require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
 // MongoDB connection
-mongoose.connect(process.env.MONGODB_URI)
+mongoose.connect(process.env.MONGODB_URI || 'mongodb+srv://russtikkgireinoldo:oyG6EcKirTyFVpPk@russtikk.7sjvnrl.mongodb.net/russtikk?retryWrites=true&w=majority&appName=russtikk')
   .then(() => console.log('Connected to MongoDB'))
   .catch(err => console.error('MongoDB connection error:', err));
 
 // Middleware
 app.use(cors({
   origin: ['http://localhost:3000', 'http://127.0.0.1:3000'],
-  methods: ['GET', 'POST', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
 }));
 app.use(express.json());
 
-// Serve static files from the React build
-app.use(express.static(path.join(__dirname, 'build')));
+// Serve static files from the React build (only in production)
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, 'build')));
+}
+
+// Serve uploaded images
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
+
+// Configure multer for image upload
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const uploadPath = path.join(__dirname, 'public/uploads/products');
+    if (!fs.existsSync(uploadPath)) {
+      fs.mkdirSync(uploadPath, { recursive: true });
+    }
+    cb(null, uploadPath);
+  },
+  filename: function (req, file, cb) {
+    const uniqueName = `${uuidv4()}-${Date.now()}${path.extname(file.originalname)}`;
+    cb(null, uniqueName);
+  }
+});
+
+const fileFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith('image/')) {
+    cb(null, true);
+  } else {
+    cb(new Error('Only image files are allowed!'), false);
+  }
+};
+
+const upload = multer({ 
+  storage: storage,
+  fileFilter: fileFilter,
+  limits: {
+    fileSize: 10 * 1024 * 1024 // 10MB limit
+  }
+});
 
 // Stripe configuration
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+
+// ============================================
+// PRODUCT API ENDPOINTS
+// ============================================
+
+// Get all products with pagination and filtering
+app.get('/api/products', async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 20;
+    const skip = (page - 1) * limit;
+    const category = req.query.category;
+    const featured = req.query.featured;
+    
+    let query = {};
+    if (category) query.category = category;
+    if (featured) query.featured = featured === 'true';
+    
+    const products = await Product.find(query)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+    
+    const total = await Product.countDocuments(query);
+    
+    res.json({
+      products,
+      pagination: {
+        page,
+        limit,
+        total,
+        pages: Math.ceil(total / limit)
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching products:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get single product by ID or slug
+app.get('/api/products/:identifier', async (req, res) => {
+  try {
+    const { identifier } = req.params;
+    
+    // Try to find by MongoDB _id first, then by slug
+    let product;
+    if (mongoose.Types.ObjectId.isValid(identifier)) {
+      product = await Product.findById(identifier);
+    }
+    
+    if (!product) {
+      product = await Product.findOne({ slug: identifier });
+    }
+    
+    if (!product) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+    
+    res.json(product);
+  } catch (error) {
+    console.error('Error fetching product:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Create new product
+app.post('/api/products', async (req, res) => {
+  try {
+    const productData = req.body;
+    
+    // Validate required fields
+    const requiredFields = ['name', 'description', 'price', 'category', 'sizes', 'colors'];
+    for (const field of requiredFields) {
+      if (!productData[field]) {
+        return res.status(400).json({ error: `${field} is required` });
+      }
+    }
+    
+    const product = new Product(productData);
+    await product.save();
+    
+    res.status(201).json(product);
+  } catch (error) {
+    console.error('Error creating product:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Update product
+app.put('/api/products/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updateData = req.body;
+    
+    const product = await Product.findByIdAndUpdate(
+      id, 
+      updateData, 
+      { new: true, runValidators: true }
+    );
+    
+    if (!product) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+    
+    res.json(product);
+  } catch (error) {
+    console.error('Error updating product:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Delete product
+app.delete('/api/products/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const product = await Product.findById(id);
+    if (!product) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+    
+    // Delete associated image files
+    if (product.images && product.images.length > 0) {
+      product.images.forEach(image => {
+        const filePath = path.join(__dirname, 'public', image.path);
+        if (fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath);
+        }
+      });
+    }
+    
+    await Product.findByIdAndDelete(id);
+    res.json({ message: 'Product deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting product:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Upload product images
+app.post('/api/products/:id/images', upload.array('images', 10), async (req, res) => {
+  try {
+    const { id } = req.params;
+    const product = await Product.findById(id);
+    
+    if (!product) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+    
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ error: 'No images uploaded' });
+    }
+    
+    // Add new images to product
+    const newImages = req.files.map((file, index) => ({
+      filename: file.filename,
+      path: `/uploads/products/${file.filename}`,
+      isPrimary: product.images.length === 0 && index === 0, // First image is primary if no images exist
+      alt: req.body.alt || product.name
+    }));
+    
+    product.images.push(...newImages);
+    await product.save();
+    
+    res.json({
+      message: 'Images uploaded successfully',
+      images: newImages,
+      product: product
+    });
+  } catch (error) {
+    console.error('Error uploading images:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Delete specific product image
+app.delete('/api/products/:id/images/:imageId', async (req, res) => {
+  try {
+    const { id, imageId } = req.params;
+    const product = await Product.findById(id);
+    
+    if (!product) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+    
+    const imageIndex = product.images.findIndex(img => img._id.toString() === imageId);
+    if (imageIndex === -1) {
+      return res.status(404).json({ error: 'Image not found' });
+    }
+    
+    // Delete file from filesystem
+    const image = product.images[imageIndex];
+    const filePath = path.join(__dirname, 'public', image.path);
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
+    
+    // Remove from product
+    product.images.splice(imageIndex, 1);
+    
+    // If deleted image was primary and other images exist, make first one primary
+    if (image.isPrimary && product.images.length > 0) {
+      product.images[0].isPrimary = true;
+    }
+    
+    await product.save();
+    res.json({ message: 'Image deleted successfully', product });
+  } catch (error) {
+    console.error('Error deleting image:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Set primary image
+app.put('/api/products/:id/images/:imageId/primary', async (req, res) => {
+  try {
+    const { id, imageId } = req.params;
+    const product = await Product.findById(id);
+    
+    if (!product) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+    
+    // Set all images to not primary
+    product.images.forEach(img => img.isPrimary = false);
+    
+    // Set specified image as primary
+    const targetImage = product.images.find(img => img._id.toString() === imageId);
+    if (!targetImage) {
+      return res.status(404).json({ error: 'Image not found' });
+    }
+    
+    targetImage.isPrimary = true;
+    await product.save();
+    
+    res.json({ message: 'Primary image updated', product });
+  } catch (error) {
+    console.error('Error setting primary image:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ============================================
+// EXISTING ENDPOINTS (Stripe, Orders, Admin)
+// ============================================
 
 // Create payment intent endpoint
 app.post('/create-payment-intent', async (req, res) => {
@@ -126,10 +412,12 @@ app.get('/health', (req, res) => {
   res.send({ status: 'OK', message: 'Payment server is running' });
 });
 
-// Handle React routing, return all requests to React app
-app.get('/*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'build', 'index.html'));
-});
+// Handle React routing, return all requests to React app (only in production)
+if (process.env.NODE_ENV === 'production') {
+  app.get('/*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'build', 'index.html'));
+  });
+}
 
 app.listen(PORT, () => {
   console.log(`Payment server running on port ${PORT}`);

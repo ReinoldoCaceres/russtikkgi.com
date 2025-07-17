@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useCart } from '../context/CartContext';
-import { CheckoutFormData } from '../types';
+import { CheckoutFormData, Product } from '../types';
 import PaymentForm from '../components/PaymentForm';
 import './Checkout.css';
 
@@ -45,6 +45,20 @@ const Checkout: React.FC = () => {
 
   const handlePaymentError = (error: string) => {
     alert(`Payment failed: ${error}`);
+  };
+
+  const getProductImageSrc = (product: Product) => {
+    const primaryImage = product.images?.find(img => img.isPrimary) || product.images?.[0];
+    return primaryImage?.path || primaryImage?.filename;
+  };
+
+  const getProductImageAlt = (product: Product) => {
+    const primaryImage = product.images?.find(img => img.isPrimary) || product.images?.[0];
+    return primaryImage?.alt || product.name;
+  };
+
+  const getProductId = (product: Product) => {
+    return product.id || product._id || '';
   };
 
   if (items.length === 0 && !orderComplete) {
@@ -247,25 +261,36 @@ const Checkout: React.FC = () => {
             <h2 className="checkout__summary-title">Order Summary</h2>
             
             <div className="checkout__items">
-              {items.map((item) => (
-                <div key={`${item.product.id}-${item.size}-${item.color}`} className="checkout__item">
-                  <div className="checkout__item-image">
-                    <div className="checkout__item-placeholder">
-                      {item.product.image}
+              {items.map((item) => {
+                const productId = getProductId(item.product);
+                return (
+                  <div key={`${productId}-${item.size}-${item.color}`} className="checkout__item">
+                    <div className="checkout__item-image">
+                      {getProductImageSrc(item.product) ? (
+                        <img 
+                          src={getProductImageSrc(item.product)} 
+                          alt={getProductImageAlt(item.product)}
+                          className="checkout__item-img"
+                        />
+                      ) : (
+                        <div className="checkout__item-placeholder">
+                          No Image
+                        </div>
+                      )}
+                      <span className="checkout__item-quantity">{item.quantity}</span>
                     </div>
-                    <span className="checkout__item-quantity">{item.quantity}</span>
+                    <div className="checkout__item-details">
+                      <h4 className="checkout__item-name">{item.product.name}</h4>
+                      <p className="checkout__item-options">
+                        {item.size} / {item.color}
+                      </p>
+                      <p className="checkout__item-price">
+                        ${(item.product.price * item.quantity).toFixed(2)}
+                      </p>
+                    </div>
                   </div>
-                  <div className="checkout__item-details">
-                    <h4 className="checkout__item-name">{item.product.name}</h4>
-                    <p className="checkout__item-options">
-                      {item.size} / {item.color}
-                    </p>
-                    <p className="checkout__item-price">
-                      ${(item.product.price * item.quantity).toFixed(2)}
-                    </p>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             <div className="checkout__totals">

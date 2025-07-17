@@ -90,20 +90,40 @@
 
 .hero__collection-image {
   margin-bottom: 30px;
+  width: 100%;
+  max-width: 300px;
+  height: 300px;
+  margin-left: auto;
+  margin-right: auto;
+  overflow: hidden;
+  border-radius: 8px;
+  position: relative;
+}
+
+.hero__hero-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 8px;
+  transition: transform 0.3s ease;
+}
+
+.hero__collection-item--main:hover .hero__hero-image {
+  transform: scale(1.05);
 }
 
 .hero__placeholder-image {
-  width: 100%;
-  height: 300px;
-  background: #333333;
+  color: #999;
+  font-size: 0.9rem;
+  text-align: center;
+  padding: 2rem;
+  background: #f8f8f8;
+  border: 1px solid #e5e5e5;
+  min-height: 300px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #999999;
-  font-size: 14px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  border: 1px solid #555555;
 }
 
 .hero__collection-content {
@@ -114,20 +134,19 @@
   font-size: 24px;
   font-weight: 300;
   letter-spacing: 2px;
-  text-transform: uppercase;
   margin-bottom: 20px;
   color: #ffffff;
 }
 
 .hero__collection-btn {
-  padding: 15px 30px;
+  padding: 15px 40px;
   background: transparent;
-  border: 1px solid #ffffff;
   color: #ffffff;
-  font-size: 12px;
+  border: 2px solid #ffffff;
+  font-size: 14px;
+  font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 1px;
-  font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
 }
@@ -140,36 +159,35 @@
 /* Responsive Design */
 @media (max-width: 768px) {
   .hero {
-    margin-top: 120px;
-    padding: 40px 0;
+    margin-top: 100px;
+    min-height: 80vh;
   }
 
   .hero__brand {
-    margin-bottom: 60px;
+    margin-bottom: 40px;
   }
 
   .hero__title {
+    font-size: clamp(32px, 10vw, 64px);
     letter-spacing: 4px;
   }
 
   .hero__collection-item--main {
-    padding: 30px 20px;
+    padding: 20px;
   }
 
-  .hero__placeholder-image {
-    height: 200px;
-    font-size: 12px;
+  .hero__collection-image {
+    max-width: 250px;
+    height: 250px;
   }
 
   .hero__collection-title {
-    font-size: 20px;
+    font-size: 18px;
     letter-spacing: 1px;
   }
-}
 
-@media (min-width: 1200px) {
-  .hero__collection {
-    grid-template-columns: 1fr 1fr;
-    gap: 60px;
+  .hero__collection-btn {
+    padding: 12px 30px;
+    font-size: 12px;
   }
 } 

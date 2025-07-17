@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { getProductById } from '../data/products';
 import { useCart } from '../context/CartContext';
+import { Product } from '../types';
 import './ProductDetail.css';
 
 const ProductDetail: React.FC = () => {
@@ -10,19 +11,62 @@ const ProductDetail: React.FC = () => {
   const [selectedSize, setSelectedSize] = useState('');
   const [selectedColor, setSelectedColor] = useState('');
   const [quantity, setQuantity] = useState(1);
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   
-  if (!id) {
-    return <div>Product not found</div>;
+  useEffect(() => {
+    const loadProduct = async () => {
+      if (!id) {
+        setError('Product ID not provided');
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        const productData = await getProductById(id);
+        if (productData) {
+          setProduct(productData);
+        } else {
+          setError('Product not found');
+        }
+      } catch (err) {
+        setError('Failed to load product');
+        console.error('Error loading product:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadProduct();
+  }, [id]);
+
+  // Reset image selection when product changes
+  useEffect(() => {
+    setSelectedImageIndex(0);
+  }, [product]);
+
+  if (loading) {
+    return (
+      <div className="product-detail product-detail--loading">
+        <div className="container">
+          <div className="product-detail__loading">
+            <h2>Loading product...</h2>
+            <p>Please wait while we fetch the product details.</p>
+          </div>
+        </div>
+      </div>
+    );
   }
-  
-  const product = getProductById(id);
-  
-  if (!product) {
+
+  if (error || !product) {
     return (
       <div className="product-detail product-detail--not-found">
         <div className="container">
           <h1>Product not found</h1>
-          <p>The product you're looking for doesn't exist.</p>
+          <p>{error || "The product you're looking for doesn't exist."}</p>
           <Link to="/" className="product-detail__back-btn">
             Back to Home
           </Link>
@@ -55,6 +99,13 @@ const ProductDetail: React.FC = () => {
     }
   };
 
+  // Get all images
+  const productImages = product.images || [];
+  const hasImages = productImages.length > 0;
+  const selectedImage = hasImages ? productImages[selectedImageIndex] : null;
+  const selectedImageSrc = selectedImage?.path || selectedImage?.filename;
+  const selectedImageAlt = selectedImage?.alt || product.name;
+
   return (
     <div className="product-detail">
       <div className="container">
@@ -72,11 +123,42 @@ const ProductDetail: React.FC = () => {
         <div className="product-detail__content">
           {/* Product Images */}
           <div className="product-detail__images">
+            {/* Main Image Display */}
             <div className="product-detail__main-image">
-              <div className="product-detail__image-placeholder">
-                {product.image}
+              {selectedImageSrc ? (
+                <img 
+                  src={selectedImageSrc} 
+                  alt={selectedImageAlt}
+                  className="product-detail__image"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                    e.currentTarget.nextElementSibling?.setAttribute('style', 'display: flex');
+                  }}
+                />
+              ) : null}
+              <div className="product-detail__image-placeholder" style={{ display: selectedImageSrc ? 'none' : 'flex' }}>
+                No Image Available
               </div>
             </div>
+
+            {/* Image Thumbnails */}
+            {productImages.length > 1 && (
+              <div className="product-detail__thumbnails">
+                {productImages.map((image, index) => (
+                  <div 
+                    key={index}
+                    className={`product-detail__thumbnail ${index === selectedImageIndex ? 'product-detail__thumbnail--active' : ''}`}
+                    onClick={() => setSelectedImageIndex(index)}
+                  >
+                    <img 
+                      src={image.path || image.filename} 
+                      alt={image.alt || product.name}
+                      className="product-detail__thumbnail-img"
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Product Information */}

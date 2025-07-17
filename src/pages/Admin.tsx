@@ -127,6 +127,13 @@ const Admin: React.FC = () => {
   return (
     <div className="admin">
       <div className="container">
+                {/* Admin Navigation */}
+        <div className="admin-nav">
+          <div className="admin-nav__links">
+            <a href="/admin" className="admin-nav__link admin-nav__link--active">Orders</a>
+            <a href="/admin/products" className="admin-nav__link">Products</a>
+          </div>
+        </div>
         <div className="admin__header">
           <h1 className="admin__title">Order Management</h1>
           <div className="admin__stats">

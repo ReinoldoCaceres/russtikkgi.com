@@ -1,16 +1,85 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { getProductsByCategory } from '../data/products';
 import { useCart } from '../context/CartContext';
+import { Product } from '../types';
 import './ProductListing.css';
 
 const ProductListing: React.FC = () => {
   const { category } = useParams<{ category: string }>();
   const { addToCart } = useCart();
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   
-  if (!category) return <div>Category not found</div>;
+  useEffect(() => {
+    const loadProducts = async () => {
+      if (!category) {
+        setError('Category not provided');
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        const productList = await getProductsByCategory(category);
+        setProducts(productList);
+      } catch (err) {
+        setError('Failed to load products');
+        console.error('Error loading products:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadProducts();
+  }, [category]);
   
-  const products = getProductsByCategory(category);
+  if (!category) {
+    return (
+      <div className="product-listing">
+        <div className="container">
+          <div className="product-listing__error">Category not found</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="product-listing">
+        <div className="product-listing__header">
+          <div className="container">
+            <h1 className="product-listing__title">Loading...</h1>
+            <p className="product-listing__description">Please wait while we load the products.</p>
+          </div>
+        </div>
+        <div className="container">
+          <div className="product-listing__loading">
+            <p>Loading products...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="product-listing">
+        <div className="product-listing__header">
+          <div className="container">
+            <h1 className="product-listing__title">Error</h1>
+            <p className="product-listing__description">{error}</p>
+          </div>
+        </div>
+        <div className="container">
+          <div className="product-listing__error">
+            <Link to="/">Return to Home</Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
   
   const getCategoryTitle = (cat: string) => {
     switch (cat) {
@@ -31,10 +100,20 @@ const ProductListing: React.FC = () => {
   };
 
   const handleQuickAdd = (productId: string) => {
-    const product = products.find(p => p.id === productId);
+    const product = products.find(p => p.id === productId || p._id === productId);
     if (product && product.inStock) {
       addToCart(product, product.sizes[0], product.colors[0], 1);
     }
+  };
+
+  const getProductImageSrc = (product: Product) => {
+    const primaryImage = product.images?.find(img => img.isPrimary) || product.images?.[0];
+    return primaryImage?.path || primaryImage?.filename;
+  };
+
+  const getProductImageAlt = (product: Product) => {
+    const primaryImage = product.images?.find(img => img.isPrimary) || product.images?.[0];
+    return primaryImage?.alt || product.name;
   };
 
   return (
@@ -64,18 +143,34 @@ const ProductListing: React.FC = () => {
 
         <div className="product-listing__grid">
           {products.map(product => (
-            <div key={product.id} className="product-listing__item">
-              <Link to={`/product/${product.id}`} className="product-listing__link">
-                <div className="product-listing__image">
-                  <div className="product-listing__placeholder">
-                    {product.image}
-                  </div>
-                  {!product.inStock && (
-                    <div className="product-listing__sold-out">
-                      Sold Out
+            <div key={product.id || product._id} className="product-listing__item">
+              <Link to={`/product/${product.id || product._id}`} className="product-listing__link">
+                                  <div className="product-listing__image">
+                    {getProductImageSrc(product) ? (
+                      <img 
+                        src={getProductImageSrc(product)} 
+                        alt={getProductImageAlt(product)}
+                        className="product-listing__img"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                          e.currentTarget.nextElementSibling?.setAttribute('style', 'display: flex');
+                        }}
+                      />
+                    ) : null}
+                    <div className="product-listing__placeholder" style={{ display: getProductImageSrc(product) ? 'none' : 'flex' }}>
+                      No Image
                     </div>
-                  )}
-                </div>
+                    {!product.inStock && (
+                      <div className="product-listing__sold-out">
+                        Sold Out
+                      </div>
+                    )}
+                    {product.images && product.images.length > 1 && (
+                      <div className="product-listing__image-count">
+                        +{product.images.length - 1} more
+                      </div>
+                    )}
+                  </div>
                 
                 <div className="product-listing__info">
                   <h3 className="product-listing__name">{product.name}</h3>
@@ -100,7 +195,7 @@ const ProductListing: React.FC = () => {
                 {product.inStock ? (
                   <button 
                     className="product-listing__quick-add"
-                    onClick={() => handleQuickAdd(product.id)}
+                    onClick={() => handleQuickAdd(product.id || product._id || '')}
                   >
                     Quick Add
                   </button>
@@ -117,7 +212,7 @@ const ProductListing: React.FC = () => {
           ))}
         </div>
 
-        {products.length === 0 && (
+        {products.length === 0 && !loading && !error && (
           <div className="product-listing__empty">
             <h2>No products found</h2>
             <p>Check back soon for new arrivals.</p>

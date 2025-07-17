@@ -1,0 +1,468 @@
+.product-management {
+  padding: 2rem 0;
+  min-height: 100vh;
+  background-color: #f8f9fa;
+}
+
+.product-management .container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* Admin Navigation */
+.admin-nav {
+  margin-bottom: 2rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.admin-nav__links {
+  display: flex;
+  gap: 2rem;
+}
+
+.admin-nav__link {
+  text-decoration: none;
+  color: #666;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.admin-nav__link:hover {
+  color: #007bff;
+  background: #f0f8ff;
+}
+
+.admin-nav__link--active {
+  color: #007bff;
+  background: #e3f2fd;
+  font-weight: 600;
+}
+
+.product-management__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.product-management__title {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.product-management__add-btn {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-size: 1rem;
+  min-width: 140px;
+}
+
+.product-management__add-btn:hover {
+  background: #0056b3;
+}
+
+.product-management__loading,
+.product-management__error {
+  text-align: center;
+  padding: 2rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin-bottom: 2rem;
+}
+
+.product-management__error {
+  color: #dc3545;
+  border-left: 4px solid #dc3545;
+}
+
+/* Form Overlay */
+.product-management__form-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.product-management__form {
+  background: white;
+  border-radius: 12px;
+  max-width: 800px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.product-management__form-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid #eee;
+}
+
+.product-management__form-header h2 {
+  margin: 0;
+  color: #333;
+  font-size: 1.5rem;
+}
+
+.product-management__close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #666;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.product-management__close-btn:hover {
+  background: #f0f0f0;
+}
+
+.product-management__form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  padding: 1.5rem;
+}
+
+.product-management__form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.product-management__form-group--full {
+  grid-column: 1 / -1;
+}
+
+.product-management__form-group label {
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.product-management__form-group input,
+.product-management__form-group select,
+.product-management__form-group textarea {
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.product-management__form-group input:focus,
+.product-management__form-group select:focus,
+.product-management__form-group textarea:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+}
+
+.product-management__form-group textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.product-management__checkboxes {
+  flex-direction: row;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.product-management__checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-weight: normal !important;
+  margin-bottom: 0 !important;
+}
+
+.product-management__checkbox input[type="checkbox"] {
+  margin: 0;
+  width: auto;
+}
+
+.product-management__selected-files {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.product-management__file-name {
+  background: #f0f0f0;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.product-management__form-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  padding: 1.5rem;
+  border-top: 1px solid #eee;
+}
+
+.product-management__form-actions button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.product-management__form-actions button[type="button"] {
+  background: #6c757d;
+  color: white;
+}
+
+.product-management__form-actions button[type="button"]:hover {
+  background: #545b62;
+}
+
+.product-management__form-actions button[type="submit"] {
+  background: #28a745;
+  color: white;
+}
+
+.product-management__form-actions button[type="submit"]:hover:not(:disabled) {
+  background: #1e7e34;
+}
+
+.product-management__form-actions button:disabled {
+  background: #6c757d;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Product List */
+.product-management__list {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+
+.product-management__table {
+  display: flex;
+  flex-direction: column;
+}
+
+.product-management__table-header {
+  display: grid;
+  grid-template-columns: 100px 1fr 120px 100px 120px 140px;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  background: #f8f9fa;
+  font-weight: 600;
+  color: #333;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.product-management__table-row {
+  display: grid;
+  grid-template-columns: 100px 1fr 120px 100px 120px 140px;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #eee;
+  align-items: center;
+  transition: background-color 0.2s;
+}
+
+.product-management__table-row:hover {
+  background: #f8f9fa;
+}
+
+.product-management__image {
+  width: 80px;
+  height: 80px;
+}
+
+.product-management__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.product-management__image-placeholder {
+  width: 100%;
+  height: 100%;
+  background: #f0f0f0;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  color: #666;
+  text-align: center;
+  padding: 0.25rem;
+  overflow: hidden;
+}
+
+.product-management__product-info h3 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.product-management__product-info p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #666;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.product-management__category {
+  font-size: 0.875rem;
+  color: #666;
+  text-transform: capitalize;
+}
+
+.product-management__price {
+  font-weight: 600;
+  color: #333;
+  font-size: 1rem;
+}
+
+.product-management__stock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.product-management__stock-badge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-align: center;
+}
+
+.product-management__stock-badge.in-stock {
+  background: #d4edda;
+  color: #155724;
+}
+
+.product-management__stock-badge.out-of-stock {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.product-management__actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.product-management__edit-btn,
+.product-management__delete-btn {
+  padding: 0.5rem 0.75rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.product-management__edit-btn {
+  background: #007bff;
+  color: white;
+}
+
+.product-management__edit-btn:hover {
+  background: #0056b3;
+}
+
+.product-management__delete-btn {
+  background: #dc3545;
+  color: white;
+}
+
+.product-management__delete-btn:hover {
+  background: #c82333;
+}
+
+.product-management__empty {
+  text-align: center;
+  padding: 3rem;
+  color: #666;
+}
+
+.product-management__empty h3 {
+  margin: 0 0 0.5rem 0;
+  color: #333;
+}
+
+.product-management__empty p {
+  margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .product-management__form-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .product-management__checkboxes {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .product-management__table-header,
+  .product-management__table-row {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  
+  .product-management__table-header {
+    display: none;
+  }
+  
+  .product-management__table-row {
+    padding: 1rem;
+    border: 1px solid #eee;
+    margin-bottom: 0.5rem;
+    border-radius: 6px;
+  }
+  
+  .product-management__image {
+    width: 60px;
+    height: 60px;
+  }
+} 

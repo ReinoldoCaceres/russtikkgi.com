@@ -1,13 +1,29 @@
+export interface ProductImage {
+  filename: string;
+  path: string;
+  isPrimary: boolean;
+  alt?: string;
+  _id?: string;
+}
+
 export interface Product {
-  id: string;
+  _id?: string;
+  id?: string; // For backwards compatibility
   name: string;
   price: number;
   category: 'swimwear' | 'ball-gowns' | 'revamp';
-  image: string;
+  images: ProductImage[];
   description: string;
   sizes: string[];
   colors: string[];
   inStock: boolean;
+  stockQuantity?: number;
+  slug?: string;
+  tags?: string[];
+  featured?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+  primaryImage?: ProductImage;
 }
 
 export interface CartItem {
@@ -35,5 +51,5 @@ export interface CheckoutFormData {
   city: string;
   zipCode: string;
   country: string;
-  paymentMethod: 'card' | 'paypal';
+  paymentMethod: 'card';
 } 
