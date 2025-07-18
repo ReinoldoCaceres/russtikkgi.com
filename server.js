@@ -5,8 +5,10 @@ const mongoose = require('mongoose');
 const multer = require('multer');
 const { v4: uuidv4 } = require('uuid');
 const fs = require('fs');
+const jwt = require('jsonwebtoken');
 const Order = require('./models/Order');
 const Product = require('./models/Product');
+const Admin = require('./models/Admin');
 require('dotenv').config();
 
 const app = express();
@@ -67,6 +69,9 @@ const upload = multer({
 
 // Stripe configuration
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+
+// JWT configuration
+const JWT_SECRET = process.env.JWT_SECRET || 'russtikk_admin_secret_2025_secure_key';
 
 // ============================================
 // PRODUCT API ENDPOINTS
@@ -364,8 +369,112 @@ app.post('/api/orders', async (req, res) => {
   }
 });
 
-// Admin endpoints
-app.get('/api/admin/orders', async (req, res) => {
+// ============================================
+// AUTHENTICATION MIDDLEWARE
+// ============================================
+
+// Middleware to verify JWT token
+const authenticateAdmin = async (req, res, next) => {
+  try {
+    const token = req.header('Authorization')?.replace('Bearer ', '');
+    
+    if (!token) {
+      return res.status(401).json({ error: 'Access denied. No token provided.' });
+    }
+
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const admin = await Admin.findById(decoded.adminId);
+    
+    if (!admin || !admin.isActive) {
+      return res.status(401).json({ error: 'Invalid token or admin not active.' });
+    }
+
+    req.admin = admin;
+    next();
+  } catch (error) {
+    console.error('Auth middleware error:', error);
+    res.status(401).json({ error: 'Invalid token.' });
+  }
+};
+
+// ============================================
+// AUTHENTICATION ENDPOINTS
+// ============================================
+
+// Admin login endpoint
+app.post('/api/auth/admin/login', async (req, res) => {
+  try {
+    const { username, password } = req.body;
+
+    if (!username || !password) {
+      return res.status(400).json({ error: 'Username and password are required.' });
+    }
+
+    // Find admin user
+    const admin = await Admin.findOne({ username: username.trim() });
+    if (!admin) {
+      return res.status(401).json({ error: 'Invalid credentials.' });
+    }
+
+    // Check if admin is active
+    if (!admin.isActive) {
+      return res.status(401).json({ error: 'Admin account is deactivated.' });
+    }
+
+    // Check password
+    const isPasswordValid = await admin.comparePassword(password);
+    if (!isPasswordValid) {
+      return res.status(401).json({ error: 'Invalid credentials.' });
+    }
+
+    // Update last login
+    await admin.updateLastLogin();
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { adminId: admin._id, username: admin.username },
+      JWT_SECRET,
+      { expiresIn: '24h' }
+    );
+
+    res.json({
+      success: true,
+      token,
+      admin: {
+        id: admin._id,
+        username: admin.username,
+        lastLogin: admin.lastLogin
+      }
+    });
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({ error: 'Login failed. Please try again.' });
+  }
+});
+
+// Verify token endpoint
+app.get('/api/auth/admin/verify', authenticateAdmin, (req, res) => {
+  res.json({
+    success: true,
+    admin: {
+      id: req.admin._id,
+      username: req.admin.username,
+      lastLogin: req.admin.lastLogin
+    }
+  });
+});
+
+// Admin logout endpoint (optional - mainly for clearing token on client)
+app.post('/api/auth/admin/logout', authenticateAdmin, (req, res) => {
+  res.json({ success: true, message: 'Logged out successfully.' });
+});
+
+// ============================================
+// PROTECTED ADMIN ENDPOINTS
+// ============================================
+
+// Get admin orders (protected)
+app.get('/api/admin/orders', authenticateAdmin, async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 20;

@@ -287,11 +287,50 @@
   margin-bottom: 2rem;
   padding: 1rem 0;
   border-bottom: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .admin-nav__links {
   display: flex;
   gap: 2rem;
+}
+
+.admin-nav__user {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.admin-nav__welcome {
+  font-size: 0.9rem;
+  color: #666;
+  font-weight: 500;
+}
+
+.admin-nav__logout {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.admin-nav__logout:hover {
+  background: #c82333;
+}
+
+.admin-nav__logout svg {
+  width: 16px;
+  height: 16px;
 }
 
 .admin-nav__link {

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Product } from '../types';
 import { productApi } from '../services/api';
 import { getAllProducts, invalidateProductsCache } from '../data/products';
+import { useAuth } from '../context/AuthContext';
 import './ProductManagement.css';
 
 interface ProductFormData {
@@ -39,6 +40,7 @@ const ProductManagement: React.FC = () => {
   });
   const [selectedImages, setSelectedImages] = useState<FileList | null>(null);
   const [uploading, setUploading] = useState(false);
+  const { logout, admin } = useAuth();
 
   useEffect(() => {
     loadProducts();
@@ -181,6 +183,15 @@ const ProductManagement: React.FC = () => {
           <div className="admin-nav__links">
             <a href="/admin" className="admin-nav__link">Orders</a>
             <a href="/admin/products" className="admin-nav__link admin-nav__link--active">Products</a>
+          </div>
+          <div className="admin-nav__user">
+            <span className="admin-nav__welcome">Welcome, {admin?.username}</span>
+            <button className="admin-nav__logout" onClick={logout}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/>
+              </svg>
+              Logout
+            </button>
           </div>
         </div>
 

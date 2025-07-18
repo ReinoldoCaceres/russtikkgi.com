@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext';
 import './Admin.css';
 
 interface OrderItem {
@@ -56,13 +57,24 @@ const Admin: React.FC = () => {
   const [pagination, setPagination] = useState<any>(null);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [showOrderDetails, setShowOrderDetails] = useState(false);
+  const { logout, admin } = useAuth();
 
   const fetchOrders = async (page: number = 1) => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/admin/orders?page=${page}&limit=20`);
+      const token = localStorage.getItem('admin_token');
+      
+      const response = await fetch(`/api/admin/orders?page=${page}&limit=20`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       
       if (!response.ok) {
+        if (response.status === 401) {
+          logout();
+          return;
+        }
         throw new Error('Failed to fetch orders');
       }
       
@@ -144,6 +156,15 @@ const Admin: React.FC = () => {
           <div className="admin-nav__links">
             <a href="/admin" className="admin-nav__link admin-nav__link--active">Orders</a>
             <a href="/admin/products" className="admin-nav__link">Products</a>
+          </div>
+          <div className="admin-nav__user">
+            <span className="admin-nav__welcome">Welcome, {admin?.username}</span>
+            <button className="admin-nav__logout" onClick={logout}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/>
+              </svg>
+              Logout
+            </button>
           </div>
         </div>
         <div className="admin__header">
