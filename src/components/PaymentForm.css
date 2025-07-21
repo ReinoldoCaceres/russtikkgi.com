@@ -21,6 +21,26 @@
   margin-bottom: 1.5rem;
 }
 
+.payment-form__field {
+  margin-bottom: 1rem;
+}
+
+.payment-form__card-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.payment-form__field--half {
+  margin-bottom: 0;
+}
+
+.payment-form__format-hint {
+  font-size: 0.75rem;
+  color: #666;
+  margin-top: 0.25rem;
+}
+
 .payment-form__label {
   display: block;
   font-weight: 500;
@@ -112,5 +132,18 @@
   
   .payment-form__total {
     font-size: 1.125rem;
+  }
+  
+  .payment-form__card-row {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .payment-form__field--half {
+    margin-bottom: 1rem;
+  }
+  
+  .payment-form__field--half:last-child {
+    margin-bottom: 0;
   }
 } 

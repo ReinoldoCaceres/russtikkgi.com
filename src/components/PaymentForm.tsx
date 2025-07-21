@@ -61,9 +61,11 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
       base: {
         fontSize: '16px',
         color: '#424770',
+        fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif',
         '::placeholder': {
           color: '#aab7c4',
         },
+        padding: '12px',
       },
       invalid: {
         color: '#9e2146',
@@ -164,7 +166,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
         clientSecret,
         {
           payment_method: {
-            card: elements.getElement(CardElement)!,
+            card: elements.getElement(CardNumberElement)!,
             billing_details: {
               name: `${customerInfo.firstName} ${customerInfo.lastName}`,
               email: customerInfo.email,
@@ -201,11 +203,34 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
         <h2 className="payment-form__title">Payment Information</h2>
         
         <div className="payment-form__card-element">
-          <label className="payment-form__label">
-            Card Information
-          </label>
-          <div className="payment-form__card-input">
-            <CardElement options={cardElementOptions} />
+          <div className="payment-form__field">
+            <label className="payment-form__label">
+              Card Number *
+            </label>
+            <div className="payment-form__card-input">
+              <CardNumberElement options={cardElementOptions} />
+            </div>
+          </div>
+          
+          <div className="payment-form__card-row">
+            <div className="payment-form__field payment-form__field--half">
+              <label className="payment-form__label">
+                Expiration Date *
+              </label>
+              <div className="payment-form__card-input">
+                <CardExpiryElement options={cardElementOptions} />
+              </div>
+              <div className="payment-form__format-hint">Format: MM/YY</div>
+            </div>
+            
+            <div className="payment-form__field payment-form__field--half">
+              <label className="payment-form__label">
+                CVC *
+              </label>
+              <div className="payment-form__card-input">
+                <CardCvcElement options={cardElementOptions} />
+              </div>
+            </div>
           </div>
         </div>
 
