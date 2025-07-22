@@ -159,8 +159,9 @@
 /* Responsive Design */
 @media (max-width: 768px) {
   .hero {
-    margin-top: 100px;
+    margin-top: 120px;
     min-height: 80vh;
+    padding-top: 20px;
   }
 
   .hero__brand {
@@ -189,5 +190,49 @@
   .hero__collection-btn {
     padding: 12px 30px;
     font-size: 12px;
+  }
+}
+
+/* Extra small screens (iPhone and similar) */
+@media (max-width: 480px) {
+  .hero {
+    margin-top: 110px;
+    padding-top: 30px;
+  }
+
+  .hero__title {
+    font-size: clamp(28px, 12vw, 48px);
+    letter-spacing: 3px;
+    margin-bottom: 15px;
+  }
+
+  .hero__content {
+    padding: 0 15px;
+  }
+
+  .hero__brand {
+    margin-bottom: 30px;
+  }
+
+  .hero__collection-item--main {
+    padding: 15px;
+  }
+
+  .hero__collection-image {
+    max-width: 200px;
+    height: 200px;
+  }
+}
+
+/* iPhone 16 Pro and similar very small screens */
+@media (max-width: 390px) {
+  .hero {
+    margin-top: 100px;
+    padding-top: 40px;
+  }
+
+  .hero__title {
+    font-size: clamp(24px, 14vw, 42px);
+    letter-spacing: 2px;
   }
 } 
