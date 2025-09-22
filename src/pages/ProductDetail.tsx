@@ -43,9 +43,14 @@ const ProductDetail: React.FC = () => {
     loadProduct();
   }, [id]);
 
-  // Reset image selection when product changes
+  // Reset image selection when product changes - prioritize primary image
   useEffect(() => {
-    setSelectedImageIndex(0);
+    if (product?.images && product.images.length > 0) {
+      const primaryIndex = product.images.findIndex(img => img.isPrimary);
+      setSelectedImageIndex(primaryIndex >= 0 ? primaryIndex : 0);
+    } else {
+      setSelectedImageIndex(0);
+    }
   }, [product]);
 
   if (loading) {
@@ -102,9 +107,23 @@ const ProductDetail: React.FC = () => {
   // Get all images
   const productImages = product.images || [];
   const hasImages = productImages.length > 0;
+  // Main image should always reflect the selected thumbnail index.
+  // We set the default selection to the primary image elsewhere.
   const selectedImage = hasImages ? productImages[selectedImageIndex] : null;
   const selectedImageSrc = selectedImage?.path || selectedImage?.filename;
   const selectedImageAlt = selectedImage?.alt || product.name;
+
+  // Debug logs for image selection
+  if (process.env.NODE_ENV !== 'production') {
+    // eslint-disable-next-line no-console
+    console.log('[ProductDetail] product id:', product.id || product._id);
+    // eslint-disable-next-line no-console
+    console.log('[ProductDetail] images:', productImages);
+    // eslint-disable-next-line no-console
+    console.log('[ProductDetail] selectedImageIndex:', selectedImageIndex);
+    // eslint-disable-next-line no-console
+    console.log('[ProductDetail] selectedImageSrc:', selectedImageSrc);
+  }
 
   return (
     <div className="product-detail">
@@ -131,8 +150,28 @@ const ProductDetail: React.FC = () => {
                   alt={selectedImageAlt}
                   className="product-detail__image"
                   onError={(e) => {
+                    if (process.env.NODE_ENV !== 'production') {
+                      // eslint-disable-next-line no-console
+                      console.error('[ProductDetail] Main image failed to load:', selectedImageSrc);
+                    }
                     e.currentTarget.style.display = 'none';
                     e.currentTarget.nextElementSibling?.setAttribute('style', 'display: flex');
+                  }}
+                  onLoad={() => {
+                    if (process.env.NODE_ENV !== 'production') {
+                      // eslint-disable-next-line no-console
+                      console.log('[ProductDetail] Main image loaded:', selectedImageSrc);
+                    }
+                    // Ensure placeholder is hidden in case an earlier error toggled it on
+                    const placeholder = document.querySelector('.product-detail__image-placeholder') as HTMLElement | null;
+                    if (placeholder) {
+                      placeholder.style.display = 'none';
+                    }
+                    // Ensure the image is visible
+                    const imgEl = document.querySelector('.product-detail__image') as HTMLElement | null;
+                    if (imgEl) {
+                      imgEl.style.display = '';
+                    }
                   }}
                 />
               ) : null}
