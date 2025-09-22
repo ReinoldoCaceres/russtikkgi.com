@@ -9,6 +9,10 @@ const productImageSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  publicId: {
+    type: String,
+    default: ''
+  },
   isPrimary: {
     type: Boolean,
     default: false

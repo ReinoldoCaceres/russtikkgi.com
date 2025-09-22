@@ -103,8 +103,9 @@ const ProductManagement: React.FC = () => {
       let savedProduct: Product;
       
       if (editingProduct) {
-        // Update existing product
-        savedProduct = await productApi.updateProduct(editingProduct._id || editingProduct.id!, formData);
+        // Update existing product (exclude images to avoid overwriting)
+        const { images, ...updateData } = formData;
+        savedProduct = await productApi.updateProduct(editingProduct._id || editingProduct.id!, updateData);
       } else {
         // Create new product
         savedProduct = await productApi.createProduct(formData);
@@ -163,6 +164,51 @@ const ProductManagement: React.FC = () => {
   const getProductImageAlt = (product: Product) => {
     const primaryImage = product.images?.find(img => img.isPrimary) || product.images?.[0];
     return primaryImage?.alt || product.name;
+  };
+
+  const handleDeleteImage = async (imageId: string) => {
+    if (!editingProduct || !window.confirm('Are you sure you want to delete this image?')) {
+      return;
+    }
+
+    try {
+      await productApi.deleteImage(editingProduct._id || editingProduct.id!, imageId);
+      
+      // Update local state optimistically
+      const updatedImages = editingProduct.images.filter(img => img._id !== imageId);
+      const updatedProduct = { ...editingProduct, images: updatedImages };
+      setEditingProduct(updatedProduct);
+      
+      // Refresh products list
+      invalidateProductsCache();
+      await loadProducts();
+    } catch (err) {
+      console.error('Error deleting image:', err);
+      alert('Failed to delete image');
+    }
+  };
+
+  const handleSetPrimaryImage = async (imageId: string) => {
+    if (!editingProduct) return;
+
+    try {
+      await productApi.setPrimaryImage(editingProduct._id || editingProduct.id!, imageId);
+      
+      // Update local state optimistically
+      const updatedImages = editingProduct.images.map(img => ({
+        ...img,
+        isPrimary: img._id === imageId
+      }));
+      const updatedProduct = { ...editingProduct, images: updatedImages };
+      setEditingProduct(updatedProduct);
+      
+      // Refresh products list
+      invalidateProductsCache();
+      await loadProducts();
+    } catch (err) {
+      console.error('Error setting primary image:', err);
+      alert('Failed to set primary image');
+    }
   };
 
   if (loading) {
@@ -310,14 +356,60 @@ const ProductManagement: React.FC = () => {
                     />
                   </div>
 
+                  {/* Existing Images */}
+                  {editingProduct && editingProduct.images && editingProduct.images.length > 0 && (
+                    <div className="product-management__form-group product-management__form-group--full">
+                      <label>Current Images</label>
+                      <div className="product-management__existing-images">
+                        {editingProduct.images.map((image, index) => (
+                          <div key={image._id || index} className="product-management__image-item">
+                            <div className="product-management__image-preview">
+                              <img 
+                                src={image.path || image.filename} 
+                                alt={image.alt || editingProduct.name}
+                                className="product-management__image-thumb"
+                              />
+                              {image.isPrimary && (
+                                <div className="product-management__primary-badge">Primary</div>
+                              )}
+                            </div>
+                            <div className="product-management__image-actions">
+                              {!image.isPrimary && (
+                                <button
+                                  type="button"
+                                  className="product-management__image-btn product-management__image-btn--primary"
+                                  onClick={() => handleSetPrimaryImage(image._id!)}
+                                  title="Set as primary image"
+                                >
+                                  Set Primary
+                                </button>
+                              )}
+                              <button
+                                type="button"
+                                className="product-management__image-btn product-management__image-btn--delete"
+                                onClick={() => handleDeleteImage(image._id!)}
+                                title="Delete this image"
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
                   <div className="product-management__form-group product-management__form-group--full">
-                    <label>Product Images</label>
+                    <label>Add New Images</label>
                     <input
                       type="file"
                       multiple
                       accept="image/*"
                       onChange={(e) => setSelectedImages(e.target.files)}
                     />
+                    <div className="product-management__upload-hint">
+                      These images will be added to the existing ones
+                    </div>
                     {selectedImages && (
                       <div className="product-management__selected-files">
                         {Array.from(selectedImages).map((file, index) => (

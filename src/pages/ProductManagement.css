@@ -384,6 +384,7 @@
   color: #666;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -470,6 +471,86 @@
 
 .product-management__empty p {
   margin: 0;
+}
+
+/* Image Management Styles */
+.product-management__existing-images {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.product-management__image-item {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.product-management__image-preview {
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+}
+
+.product-management__image-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.product-management__primary-badge {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: #007bff;
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.product-management__image-actions {
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.product-management__image-btn {
+  padding: 0.25rem 0.5rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.product-management__image-btn--primary {
+  background: #28a745;
+  color: white;
+}
+
+.product-management__image-btn--primary:hover {
+  background: #218838;
+}
+
+.product-management__image-btn--delete {
+  background: #dc3545;
+  color: white;
+}
+
+.product-management__image-btn--delete:hover {
+  background: #c82333;
+}
+
+.product-management__upload-hint {
+  font-size: 0.8rem;
+  color: #666;
+  margin-top: 0.25rem;
+  font-style: italic;
 }
 
 /* Responsive */

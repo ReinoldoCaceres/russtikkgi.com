@@ -11,6 +11,15 @@ const Product = require('./models/Product');
 const Admin = require('./models/Admin');
 require('dotenv').config();
 
+// Cloudinary setup
+const { v2: cloudinary } = require('cloudinary');
+cloudinary.config({
+  secure: true,
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
 const app = express();
 const PORT = process.env.PORT || 3001;
 
@@ -226,14 +235,27 @@ app.post('/api/products/:id/images', upload.array('images', 10), async (req, res
       return res.status(400).json({ error: 'No images uploaded' });
     }
     
-    // Add new images to product
-    const newImages = req.files.map((file, index) => ({
-      filename: file.filename,
-      path: `/uploads/products/${file.filename}`,
-      isPrimary: product.images.length === 0 && index === 0, // First image is primary if no images exist
-      alt: req.body.alt || product.name
-    }));
-    
+    const newImages = [];
+    for (let index = 0; index < req.files.length; index++) {
+      const file = req.files[index];
+      // Upload to Cloudinary
+      const uploadResult = await cloudinary.uploader.upload(file.path, {
+        folder: 'products',
+        resource_type: 'image'
+      });
+
+      // Remove local temp file
+      try { fs.existsSync(file.path) && fs.unlinkSync(file.path); } catch {}
+
+      newImages.push({
+        filename: file.originalname || file.filename,
+        path: uploadResult.secure_url,
+        publicId: uploadResult.public_id,
+        isPrimary: product.images.length === 0 && index === 0,
+        alt: req.body.alt || product.name
+      });
+    }
+
     product.images.push(...newImages);
     await product.save();
     
@@ -263,11 +285,15 @@ app.delete('/api/products/:id/images/:imageId', async (req, res) => {
       return res.status(404).json({ error: 'Image not found' });
     }
     
-    // Delete file from filesystem
+    // Delete Cloudinary asset if present, else attempt local file cleanup
     const image = product.images[imageIndex];
-    const filePath = path.join(__dirname, 'public', image.path);
-    if (fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
+    if (image.publicId) {
+      try { await cloudinary.uploader.destroy(image.publicId); } catch (e) { console.error('Cloudinary destroy failed:', e); }
+    } else if (image.path && image.path.startsWith('/uploads/')) {
+      const filePath = path.join(__dirname, 'public', image.path);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
     }
     
     // Remove from product
